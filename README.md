@@ -1,4 +1,5 @@
-## Google Chrome Extension: Smart Dials for the 'new tab page'
+Google Chrome Extension: Smart Dials for the 'new tab page'
+===========================================================
 
 **Override the 'new tab page' with a smart grid system that adapts to your habits. The more you use it the smarter it gets!
 Also features intelligent navigation suggestions based on previous browsing habits outside of your personal saved dials.**
@@ -18,7 +19,7 @@ Other features:
 * Clean interface and speedy performance.
 
 # Pending features
-*[] Performance tweaks
-*[] Feedly unread count
-*[] See pages open on other devices
-*[] Add custom environments
+* [ ] Performance tweaks
+* [ ] Feedly unread count
+* [ ] See pages open on other devices
+* [ ] Add custom environments
