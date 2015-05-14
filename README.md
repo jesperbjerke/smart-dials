@@ -18,7 +18,7 @@ Other features:
 * Clean interface and speedy performance.
 
 # Pending features
-[] Performance tweaks
-[] Feedly unread count
-[] See pages open on other devices
-[] Add custom environments
+*[] Performance tweaks
+*[] Feedly unread count
+*[] See pages open on other devices
+*[] Add custom environments
