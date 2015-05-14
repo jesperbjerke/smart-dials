@@ -1,6 +1,8 @@
 {
    "background": {
-      "scripts": [ "js/min/background.min.js" ]
+      "scripts": [ 
+         "js/min/background.min.js" 
+      ]
    },
    "browser_action": {
       "default_icon": {
@@ -18,14 +20,25 @@
       "16": "images/icon16.png",
       "48": "images/icon48.png"
    },
-   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjWJj7GZN9tdDMrk04aYEm1B8g0t+yq7W9P4zo7HSKayCEg6/M/T9jUXt9LNsdbM54qybp8u2Ko5Ew/GV3QvFjf+RiylSnc1DVlaTA+kX5c65K+c+8vbdVJE+MCq+Ci25jkCmrJHnrAvTlXtWY3hvxXZzffByCkmP20WGE2NTHPof90K8W6XQjyYIUqI1xE12kPiKAvjF4NMa3MKMZt2JrSRWy55W289RY2O/m84R2xCs8sIM6xn+SSWWPUkbsv5kxxM9zG7NQvu2FOZlS7+MjEo8RUqlTwnN4/0YXu5l4N2Kq5cZ6MiQpYOWXnAvUNWPtyyksynxbTnm5nMEfj2PVwIDAQAB",
    "manifest_version": 2,
    "name": "Smart Dials for the 'new tab page'",
    "omnibox": {
       "keyword": "dial"
    },
-   "permissions": [ "storage", "tabs", "topSites", "history", "bookmarks", "management", "https://getpocket.com/", "http://*/", "https://*/" ],
+   "permissions": [ 
+      "webRequest",
+      "storage", 
+      "tabs", 
+      "topSites", 
+      "history", 
+      "bookmarks", 
+      "management",
+      "identity",
+      "*://getpocket.com/*",
+      "*://*.getpocket.com/*",
+      "*://*.feedly.com/*",
+      "*://*/*" 
+   ],
    "short_name": "Smart Dials",
-   "update_url": "https://clients2.google.com/service/update2/crx",
-   "version": "1.0.1"
+   "version": "1.1"
 }

@@ -1,3 +1,11 @@
+//@prepros-prepend ../bower_components/jquery/dist/jquery.min.js
+//@prepros-prepend ../bower_components/isotope/dist/isotope.pkgd.min.js
+//@prepros-prepend ../bower_components/isotope-packery/packery-mode.pkgd.min.js
+//@prepros-prepend ../bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js
+//@prepros-prepend ../bower_components/jquery-dateFormat/dist/jquery-dateFormat.min.js
+//@prepros-prepend ../bower_components/colpick/js/colpick.js
+//@prepros-prepend feedly.api.js
+
 jQuery.extend({
 
 	getQueryParams : function(str) {
@@ -55,7 +63,7 @@ $(document).ready( function($){
 	var globalSettings = {};
 	
 	chrome.storage.sync.get( 'settings', function(object){
-		if($.type(object.settings) === 'undefined'){
+		if(typeof object.settings === 'undefined'){
 			chrome.storage.sync.set({
 				'settings' : {
 					'features' : {
@@ -72,8 +80,8 @@ $(document).ready( function($){
 				chrome.tabs.reload();
 			});
 		}else{
-			
-			if($.type(object.settings.features.beSmart) == 'undefined'){
+
+			if(typeof object.settings.features.beSmart === 'undefined'){
 				object.settings.features.beSmart = true;
 				chrome.storage.sync.set(object, function(){
 					chrome.tabs.reload();
@@ -81,38 +89,41 @@ $(document).ready( function($){
 			}
 			
 			globalSettings = object.settings;
-			if(($.type(object.settings.pocket) !== 'undefined') && (object.settings.features.pocket == true)){
+
+			if((typeof object.settings.pocket !== 'undefined') && (object.settings.features.pocket === true)){
 				getPocketList(object.settings.pocket.token, false);
 			}else{
 				$('#pocket').addClass('not-logged-in');
 				$('#menu li[data-target="pocket"] .popOut-btn').addClass('disabled');
 			}
-			/*
-			if($.type(object.settings.evernote) !== 'undefined'){				
-				if(object.settings.evernote.expires < $.now()){
-					$('#evernote').addClass('not-logged-in');
-				}else{
-					getEvernoteList(object.settings.evernote, false);
-				}
-			}else{
-				$('#evernote').addClass('not-logged-in');
+
+			if(object.settings.features.feedly === true){
+				feedly.readOptions(function(success){
+					if(success){
+						appGlobal.feedlyApiClient.accessToken = appGlobal.options.accessToken;
+						feedly.updateCounter();
+					}else{
+						feedly.getAccessToken();
+					}
+				});
 			}
-			*/
+
 			getDials();
 		}
 
-		$.each(object.settings.features, function(feature, setting){
-			if(setting == false){
+		for(var feature in object.settings.features){
+			var setting = object.settings.features[feature];
+			if(setting === false){
 				$('#menu li[data-target="' + feature + '"]').hide();
 				$('#settings .onoffswitch .onoffswitch-checkbox[data-value="' + feature + '"]').prop('checked', false);
 			}
-		});
+		}
 
 	});
 	
 	var thisEnvironment = '';
 	chrome.storage.local.get( 'environment', function(typeObject){
-		if($.type(typeObject.environment) === 'undefined'){
+		if(typeof typeObject.environment === 'undefined'){
 			
 			$('#setEnvironment').show().addClass('show');
 			
@@ -140,7 +151,7 @@ $(document).ready( function($){
 		var currentTime = getTimeOfDay();
 		
 		function originalSort(){
-			if(globalSettings.features.beSmart == true){
+			if(globalSettings.features.beSmart === true){
 				$('#dials #topDials').isotope({
 					filter : function(){
 						var itemFilter = $(this).attr('data-' + thisEnvironment + '-' + currentTime);
@@ -155,7 +166,7 @@ $(document).ready( function($){
 				$('#dials #filteredDials').isotope({
 					filter : function(){
 						var itemFilter = $(this).attr('data-' + thisEnvironment + '-' + currentTime);
-						if(itemFilter == 0){
+						if(itemFilter === 0){
 							return true;
 						}else{
 							return false;
@@ -178,16 +189,16 @@ $(document).ready( function($){
 					sortBy : [ thisEnvironment ]
 				});
 				$arrangeQuery = $.getQueryParams();
-				if($.type($arrangeQuery.arrange) !== 'undefined'){
-					if($arrangeQuery.arrange == 'true'){
+				if(typeof $arrangeQuery.arrange !== 'undefined'){
+					if($arrangeQuery.arrange === 'true'){
 						
 						chrome.storage.sync.get(null, function(currentDials){
-							var $sortedItems = $('#dials #topDials').data('isotope');
-							var keyCount = 1;
-							
+							var $sortedItems = $('#dials #topDials').data('isotope'),
+								keyCount = 1;
+
 							$.each($sortedItems.filteredItems, function(key, item){
 								var ID = $(item.element).attr('data-id');
-								if($.type(currentDials[ID].order) === 'undefined'){
+								if(typeof currentDials[ID].order === 'undefined'){
 									currentDials[ID].order = {};
 									currentDials[ID].order[thisEnvironment] = keyCount;
 								}else{
@@ -212,8 +223,8 @@ $(document).ready( function($){
 									function reArrange(newOrder, thisOrder){
 										
 										$.each(currentDials, function(key, dial){
-											if($.type(dial.id) !== 'undefined'){
-												if(dial.order[thisEnvironment] == newOrder){
+											if(typeof dial.id !== 'undefined'){
+												if(dial.order[thisEnvironment] === newOrder){
 													currentDials[dial.id].order[thisEnvironment] = thisOrder;
 													$('.column[data-id="' + dial.id + '"]').attr('data-' + thisEnvironment + '-order', thisOrder);
 													return false;
@@ -280,12 +291,10 @@ $(document).ready( function($){
 				$('.content').removeClass('show');
 				$('#dials').addClass('show');
 			}
-			var qsRegex;
-
-			var $container1 = $('#dials #topDials');
-			//var $container2 = $('#dials #filteredDials')
-			var $container3 = $('#dials #suggestedDials');
-			var $quicksearch = $('#dialSearch input#search');
+			var qsRegex,
+				$container1 = $('#dials #topDials'),
+				$container3 = $('#dials #suggestedDials'),
+				$quicksearch = $('#dialSearch input#search');
 
 			function debounce( fn, threshold ) {
 				var timeout;
@@ -310,13 +319,6 @@ $(document).ready( function($){
 								return qsRegex ? $(this).text().match( qsRegex ) : true;
 							}
 						});
-						/*
-						$container2.isotope({
-							filter: function() {
-								return qsRegex ? $(this).text().match( qsRegex ) : true;
-							}
-						});
-						*/
 						$container3.isotope({
 							filter: function() {
 								return qsRegex ? $(this).text().match( qsRegex ) : true;
@@ -333,7 +335,7 @@ $(document).ready( function($){
 		$('#sortingOptions #optionsInner li[data-value="' + currentTime + '"]').addClass('current');
 		
 		$('#sortingOptions #currently')
-		.html('<span class="' + thisEnvironment + '">' + thisEnvironment + '</span> <span class="' + currentTime + '">' + currentTime + '</span>');
+			.html('<span class="' + thisEnvironment + '">' + thisEnvironment + '</span> <span class="' + currentTime + '">' + currentTime + '</span>');
 		
 		$('#sortingOptions').on('click', function(){
 			$('#sortingOptions').addClass('show');
@@ -345,7 +347,7 @@ $(document).ready( function($){
 		
 		$('#sortingOptions #optionsInner li').on('click', function(){
 			var thisData = $(this).attr('data-value');
-			if((thisData == 'home') || (thisData == 'work')){
+			if((thisData === 'home') || (thisData === 'work')){
 				thisEnvironment = thisData;
 				chrome.storage.local.set({
 					'environment' : thisEnvironment
@@ -393,9 +395,9 @@ $(document).ready( function($){
 				nameIn.val(dialData[dialID].name);
 				urlIn.val(dialData[dialID].url);
 
-				if(dialData[dialID].thumb === '' || $.type(dialData[dialID].thumb) === 'undefined'){
+				if(dialData[dialID].thumb === '' || typeof dialData[dialID].thumb === 'undefined'){
 					$('#editDial .inputContainer.center').show();
-					if($.type(dialData.color) === 'undefined'){
+					if(typeof dialData.color === 'undefined'){
 						$('#picker').css('border-color','#'+dialData.color);
 					}
 
@@ -470,7 +472,7 @@ $(document).ready( function($){
 				var dialURL = $(this).attr('href');
 				var timeOfDay = getTimeOfDay();
 
-				if (dataThumb == 1) {
+				if (dataThumb === 1) {
 					e.preventDefault();
 				}
 
@@ -479,7 +481,7 @@ $(document).ready( function($){
 				
 				dialsObject[dialID].smartGroups[thisEnvironment][timeOfDay] = dialsObject[dialID].smartGroups[thisEnvironment][timeOfDay] + 1;
 
-				if (dataThumb == 1) {
+				if (dataThumb === 1) {
 
 					dialsObject[dialID].setThumb = 0;
 
@@ -488,7 +490,7 @@ $(document).ready( function($){
 					}, function(tab){
 						var isOnce = 1;
 						chrome.tabs.onUpdated.addListener( function( updatedTabID, changeInfo, updatedTab ){
-							if((tab.id == updatedTabID) && (updatedTab.status == 'complete') && (isOnce == 1)){
+							if((tab.id === updatedTabID) && (updatedTab.status === 'complete') && (isOnce === 1)){
 
 								isOnce = 0;
 								dialsObject[dialID].favicon = updatedTab.favIconUrl;
@@ -514,11 +516,18 @@ $(document).ready( function($){
 	}
 
 	function getDials(){
-		$('#dials #topDials').isotope('destroy');
-		$('#dials #filteredDials').isotope('destroy');
-		$('#dials #suggestedDials').isotope('destroy');
 
-		if($.type(globalSettings.columns) === 'undefined'){
+		if($('#dials #topDials').data('isotope')){
+			$('#dials #topDials').isotope('destroy');
+		}
+		if($('#dials #filteredDials').data('isotope')){
+			$('#dials #filteredDials').isotope('destroy');
+		}
+		if($('#dials #suggestedDials').data('isotope')){
+			$('#dials #suggestedDials').isotope('destroy');
+		}
+
+		if(typeof globalSettings.columns === 'undefined'){
 			globalSettings.columns = 5;
 		}
 		if(globalSettings.columns !== 5){
@@ -528,11 +537,12 @@ $(document).ready( function($){
 		chrome.storage.sync.get(null, function(dialsObject){
 			
 				var dialsList = [];
-				
-				$.each(dialsObject, function(dialID, dialValue){
-					if(dialID !== 'settings'){
+
+				for(var dialID in dialsObject){
+					var dialValue = dialsObject[dialID];
+					if(dialID !== 'settings' && dialID !== 'feedly_api'){
 						var extraClasses = '';
-						if(($.type(dialValue.color) === 'undefined') && (!dialValue.thumb || dialValue.thumb == undefined || dialValue.thumb == '')){
+						if((typeof dialValue.color === 'undefined') && (!dialValue.thumb || dialValue.thumb === 'undefined' || dialValue.thumb === '')){
 							extraClasses += ' usePlaceholder ver-' + dialValue.id;
 						}
 						if(globalSettings.features.beSmart == true){
@@ -549,16 +559,17 @@ $(document).ready( function($){
 								'data-work-night="' + dialValue.smartGroups.work.night + '"'
 							]
 						}else{
-							var homeorder = 1;
-							var workorder = 1;
-							if($.type(dialValue.order) !== 'undefined'){
-								if($.type(dialValue.order.home) !== 'undefined'){
+							var homeorder = 1,
+								workorder = 1;
+							
+							if(typeof dialValue.order !== 'undefined'){
+								if(typeof dialValue.order.home !== 'undefined'){
 									homeorder = dialValue.order.home;
 									if(homeorder === 0){
 										homeorder = 1;
 									}
 								}
-								if($.type(dialValue.order.work) !== 'undefined'){
+								if(typeof dialValue.order.work !== 'undefined'){
 									workorder = dialValue.order.work;
 									if(workorder === 0){
 										workorder = 1;
@@ -572,7 +583,7 @@ $(document).ready( function($){
 						}
 						
 						var backgroundColor = '';
-						if($.type(dialValue.color) !== 'undefined'){
+						if(typeof dialValue.color !== 'undefined'){
 							var normalColor = '#' + dialValue.color;
 							var lightColor = shadeColor(normalColor, 0.35);
 							backgroundColor = 'background: linear-gradient(45deg, ' + normalColor + ' 0%, ' + lightColor + ' 100%) !important;';
@@ -580,7 +591,7 @@ $(document).ready( function($){
 
 						dialsList.push('<div class="column" data-id="' + dialValue.id + '" ' + thisSmartGroups.join(' ') + '><div class="deleteDial" title="Delete" data-id="' + dialValue.id + '"><span class="icon_trash_alt"></span></div><div class="editDial" title="Edit" data-id="' + dialValue.id + '"><span class="icon_pencil"></span></div><a class="dial' + extraClasses + '" href="' + dialValue.url + '" data-id="' + dialValue.id + '" data-thumbnail="' + dialValue.setThumb + '" style="background-image:url(' + dialValue.thumb + '); ' + backgroundColor + '"><div class="dialName"><div class="nameInner"><span class="faviconImg" style="background-image:url(' + dialValue.favicon + ')"></span>' + dialValue.name + '</div></div></a><div class="dialLoader"></div></div>');
 					}
-				});
+				}
 
 				$('#dials #topDials').html(dialsList.join(''));
 
@@ -680,7 +691,7 @@ $(document).ready( function($){
 					var totalLength = Object.keys(dialsObject).length;
 					
 					for (var i = 1; i < totalLength; i++) {
-						if($.type(dialsObject[i]) !== 'undefined'){
+						if(typeof dialsObject[i] !== 'undefined'){
 							var thisItemUrl = dialsObject[i].url;
 							var newUrl = thisItemUrl.substr(thisItemUrl.indexOf('://')+3);
 							newUrl = newUrl.replace(/www\./g, '');
@@ -695,20 +706,20 @@ $(document).ready( function($){
 					var count = 0;
 					
 					function historyLoop(count){
-						if(count == historyResults.length){
+						if(count === historyResults.length){
 							compileSuggestions(historyObject);
 						}else{
 							var historyItem = historyResults[count];
 
-							if(historyItem.visitCount > 3 && historyItem.title != ''){
+							if(historyItem.visitCount > 3 && historyItem.title !== ''){
 								var thisHistoryUrl = historyItem.url;
-								if(thisHistoryUrl.indexOf('feedly') == -1 && thisHistoryUrl.indexOf('evernote') == -1){
+								if(thisHistoryUrl.indexOf('feedly') === -1 && thisHistoryUrl.indexOf('evernote') === -1){
 									var thisNewUrl = thisHistoryUrl.substr(thisHistoryUrl.indexOf('://')+3);
 									thisNewUrl = thisNewUrl.replace(/www\./g, '');
 									if(thisNewUrl.indexOf('/') !== -1) {
 										thisNewUrl = thisNewUrl.substr(0, thisNewUrl.indexOf('/'));
 									}
-									if(urlArray.indexOf(thisNewUrl) == -1){
+									if(urlArray.indexOf(thisNewUrl) === -1){
 										historyObject[historyItem.id] = {
 											"url" : thisHistoryUrl,
 											"name" : historyItem.title,
@@ -727,7 +738,7 @@ $(document).ready( function($){
 												var visitItem = visitArray[y];
 												var timeOfVisit = getTimeOfDay(visitItem.visitTime);
 												visitsCount[timeOfVisit]++;
-												if(y == arrayLength - 1){
+												if(y === arrayLength - 1){
 													historyObject[visitArray[0].id].visits = visitsCount;
 													count++;
 													if(count <= historyResults.length){
@@ -797,11 +808,11 @@ $(document).ready( function($){
 			$('#loader').show();
 		}
 		
-		if(menuTarget == 'dials'){
+		if(menuTarget === 'dials'){
 			getDials();
-		}else if(menuTarget == 'apps'){
+		}else if(menuTarget === 'apps'){
 			getApps();
-		}else if(menuTarget == 'pocket'){
+		}else if(menuTarget === 'pocket'){
 			if(!$('#pocket').hasClass('not-logged-in')){
 				chrome.storage.sync.get('settings', function(object){
 					getPocketList(object.settings.pocket.token, true);
@@ -810,15 +821,15 @@ $(document).ready( function($){
 				$('#loader').hide();
 				$('#pocket').addClass('show');
 			}
-		}else if(menuTarget == 'evernote'){
+		}else if(menuTarget === 'evernote'){
 			chrome.tabs.create({
 				url: 'https://www.evernote.com/Home.action'
 			});
-		}else if(menuTarget == 'feedly'){
+		}else if(menuTarget === 'feedly'){
 			chrome.tabs.create({
 				url: 'http://feedly.com'
 			});
-		}else if(menuTarget == 'settings'){
+		}else if(menuTarget === 'settings'){
 			
 			$('#settings .columnCount').find('.columns[data-value="' + globalSettings.columns + '"]').addClass('active');
 			
@@ -848,7 +859,7 @@ $(document).ready( function($){
 			}
 			
 			chrome.storage.sync.set(settingsData, function(){
-				if(thisValue == 'beSmart'){
+				if(thisValue === 'beSmart'){
 					chrome.tabs.reload();
 				}	
 			});
@@ -904,12 +915,12 @@ $(document).ready( function($){
 			alert('cannot load data because: "' + err + '", please try and copy and paste the whole output from SpeedDial 2 anew and try again');
 		};
 		
-		if($.type(importObject) !== 'undefinied'){
+		if(typeof importObject !== undefinied){
 
-			if($.type(importObject.dials['0']) !== 'undefined'){
+			if(typeof importObject.dials['0'] !== 'undefined'){
 				
 				var confirmation = confirm("This will overwrite all your current dials, continue?");
-				if (confirmation == true){
+				if (confirmation === true){
 					var newDials = {};
 					
 					var idCount = 1;
@@ -959,16 +970,14 @@ $(document).ready( function($){
 		}
 	}
 	
-	var pocketAPI = "https://getpocket.com/v3/";
-	var requestAuthPocket = 'oauth/request';
-	var authPocket = 'oauth/authorize';
-	var getPocket = 'get';
-	var modifyPocket = 'send';
-	var pocketConsumerKey = '29891-62d35387246a98487a6065ee';
-	
-	var requestToken = '';
-	
-	var state = location.search.replace('?', '').split('=');
+	var pocketAPI = "https://getpocket.com/v3/",
+		requestAuthPocket = 'oauth/request',
+		authPocket = 'oauth/authorize',
+		getPocket = 'get',
+		modifyPocket = 'send',
+		pocketConsumerKey = '29891-62d35387246a98487a6065ee',
+		requestToken = '',
+		state = location.search.replace('?', '').split('=');
 	
 	function doPocketIsotope(gridSizer){
 		$('#pocketDials').isotope('destroy');	
@@ -995,16 +1004,13 @@ $(document).ready( function($){
 			//'count' : totalCount
 		}).done( function(pocketData){
 			
-			var delay = 0;
-			var count = 0;
-			var output = [];
-			
-			var pocketList = [];
+			var delay = 0,
+				count = 0,
+				output = [],
+				pocketList = [];
 			
 			$.each(pocketData.list, function(itemID, itemObj){
-				
 				pocketList.push(itemObj);
-
 			});
 
 			function SortByName(a, b){
@@ -1016,38 +1022,38 @@ $(document).ready( function($){
 			
 			$('#menu li[data-target="pocket"]').find('.count').addClass('show').text(pocketList.length);
 			
-			if(doOutput == true){
+			if(doOutput === true){
 				
 				$.each(pocketList, function(itemKey, itemObj){
 
-					var columnClasses = 'column';
-					var linkClasses = 'pocket-item row';
-					var articleImage = '';
-					var timeAdded = new Date(itemObj.time_added*1000);
-					var formattedTime = $.format.date(timeAdded, 'E dd MMM, yyyy');
-					var pocketContent = '';
-					var buttonClasses = 'buttongrp';
-					var favBtn = '<span class="pocketModify setAsFav icon_star_alt" data-action="favorite"></span>';
+					var columnClasses = 'column',
+						linkClasses = 'pocket-item row',
+						articleImage = '',
+						timeAdded = new Date(itemObj.time_added*1000),
+						formattedTime = $.format.date(timeAdded, 'E dd MMM, yyyy'),
+						pocketContent = '',
+						buttonClasses = 'buttongrp',
+						favBtn = '<span class="pocketModify setAsFav icon_star_alt" data-action="favorite"></span>';
 
-					if(itemObj.favorite == 1){
+					if(itemObj.favorite === 1){
 						columnClasses += ' favorite';
 						favBtn = '<span class="pocketModify setAsFav icon_star" data-action="unfavorite"></span>';
-						if(itemObj.is_article == 0){
+						if(itemObj.is_article === 0){
 							columnClasses += ' sv-no-big';
 						}
 					}
 
-					if(itemObj.has_image == 1 || itemObj.has_image == 2){
+					if(itemObj.has_image === 1 || itemObj.has_image === 2){
 						
-						if($.type(itemObj.image) !== 'undefined'){
+						if(typeof itemObj.image !== 'undefined'){
 							articleImage = '<div class="image-container" style="background-image:url(' + itemObj.image.src + ');"></div>';
 						}
-						if(articleImage.search(/(icon-x-30-white)/i) != -1) {
+						if(articleImage.search(/(icon-x-30-white)/i) !== -1) {
 
 							linkClasses += ' error-image';
 							articleImage = '';
 
-							if((itemObj.is_article == 0) && (itemObj.favorite != 1)){
+							if((itemObj.is_article === 0) && (itemObj.favorite !== 1)){
 								columnClasses += ' no-big sv-no-big';
 							}
 
@@ -1059,19 +1065,19 @@ $(document).ready( function($){
 					}else{
 						linkClasses += ' no-image';
 
-						if((itemObj.is_article == 0) && (itemObj.favorite != 1)){
+						if((itemObj.is_article === 0) && (itemObj.favorite !== 1)){
 							columnClasses += ' no-big sv-no-big';
 						}
 					}
 
-					if(itemObj.is_article == 1){
+					if(itemObj.is_article === 1){
 						pocketContent = '<span class="pocket-excerpt">' + itemObj.excerpt + '</span>';
 					}
 
-					var pocketButtons = '<div class="' + buttonClasses + '">' + favBtn + ' <span class="pocketModify setAsRead icon_check_alt2" data-action="archive"></span> <span class="pocketModify setAsRemove icon_trash_alt" data-action="delete"></span></div>';
-					var tags = [];
+					var pocketButtons = '<div class="' + buttonClasses + '">' + favBtn + ' <span class="pocketModify setAsRead icon_check_alt2" data-action="archive"></span> <span class="pocketModify setAsRemove icon_trash_alt" data-action="delete"></span></div>',
+						tags = [];
 
-					if($.type(itemObj.tags) !== 'undefined'){
+					if(typeof itemObj.tags !== 'undefined'){
 						$.each(itemObj.tags, function(key, tagObject){
 							tags.push(tagObject.tag);
 						});
@@ -1096,7 +1102,7 @@ $(document).ready( function($){
 						}
 					});
 				
-				if(showSearch == true){
+				if(showSearch === true){
 					$('#pocketSearch').addClass('show');
 					$('#pocketSearch input#search').focus();
 					// quick search regex
@@ -1141,7 +1147,7 @@ $(document).ready( function($){
 						$.ajax( pocketAPI + modifyPocket + '?actions=%5B%7B%22action%22%3A%22' + sendAction + '%22%2C%22item_id%22%3A' + itemID + '%7D%5D&access_token=' + token + '&consumer_key=' + pocketConsumerKey )
 						.done( function(response){
 
-							if(sendAction == 'favorite'){
+							if(sendAction === 'favorite'){
 
 								if(thisColumn.hasClass('no-big')){
 									thisColumn.removeClass('no-big');
@@ -1156,7 +1162,7 @@ $(document).ready( function($){
 									$('#pocketDials').isotope('layout');
 								}, 500);
 
-							}else if(sendAction == 'archive' || sendAction == 'delete'){
+							}else if(sendAction === 'archive' || sendAction === 'delete'){
 
 								$('#pocketDials').isotope( 'remove', thisColumn ).isotope( 'on', 'removeComplete',
 									function( isoInstance, removedItems ) {
@@ -1172,7 +1178,7 @@ $(document).ready( function($){
 								});
 								$('#menu li[data-target="pocket"]').find('.count').text(allColumnsCount);
 
-							}else if(sendAction == 'unfavorite'){
+							}else if(sendAction === 'unfavorite'){
 
 								if(thisColumn.hasClass('sv-no-big')){
 									thisColumn.addClass('no-big');
@@ -1195,7 +1201,7 @@ $(document).ready( function($){
 						});
 					}
 
-					if(sendAction == 'delete'){
+					if(sendAction === 'delete'){
 						$('#confirmation').hide('fast').remove();
 						thisBtn.addClass('active');
 						$(this).parent().prepend($('<div id="confirmation" class="row">Are you sure?<br/><span id="confirm">Delete</span> <span id="regret">Cancel</span></div>').hide().show('fast'));
@@ -1225,11 +1231,11 @@ $(document).ready( function($){
 	
 	if(state.length !== 0){
 		
-		if(state[1] == 'authpocket'){
+		if(state[1] === 'authpocket'){
 
 			chrome.storage.sync.get( 'settings', function(object){
 				
-				if($.type(object.settings.pocketCode) !== 'undefined'){
+				if(typeof object.settings.pocketCode !== 'undefined'){
 					$.ajax({
 						type: "POST",
 						url: pocketAPI + authPocket,
@@ -1276,15 +1282,11 @@ $(document).ready( function($){
 				
 			});
 
-		}else if(state[1] == 'goToPocket'){
+		}else if(state[1] === 'goToPocket'){
 			$(window).load( function(){
 				$('#menu li[data-target="pocket"] .menu-icon').trigger( "click" )
 			});
-		}/* else if(state[1] == 'goToEvernote'){
-			$(window).load(function(){
-				$('#menu li[data-target="evernote"] .menu-icon').trigger( "click" );
-			});
-		}*/
+		}
 	}
 	
 	$('#authPocket').click( function(){
@@ -1307,8 +1309,8 @@ $(document).ready( function($){
 							url: 'https://getpocket.com/auth/authorize?request_token=' + data.code + '&redirect_uri=/'
 						}, function(tab){
 							chrome.tabs.onUpdated.addListener( function( tabID, info ){
-								if(tabID == tab.id){
-									if(info.url == 'http://getpocket.com/a/'){
+								if(tabID === tab.id){
+									if(info.url === 'http://getpocket.com/a/'){
 										chrome.tabs.remove( tab.id, function(){
 											chrome.tabs.update({
 												url : 'chrome://newtab/?state=authpocket',
@@ -1355,20 +1357,6 @@ $(document).ready( function($){
 			url: 'chrome://extensions'
 		});
 	});
-	/*
-	$('#goToEvernote-btn').click( function(){
-		chrome.tabs.create({
-			url: 'http://evernote.com'
-		});
-	});	
-	*/
-	/*
-	$('#goToFeedly-btn').click( function(){
-		chrome.tabs.create({
-			url: 'http://feedly.com'
-		});
-	});
-	*/
 	
 	$('#searchPocket-btn').click( function(){
 		
@@ -1495,7 +1483,7 @@ $(document).ready( function($){
 	function getApps(){
 		
 		function getIconURL(app) {
-			if (!app.icons || app.icons.length == 0) {
+			if (!app.icons || app.icons.length === 0) {
 				return chrome.extension.getURL('icon.png');
 			}
 			var largest = {size:0};
@@ -1512,7 +1500,7 @@ $(document).ready( function($){
 			var appList = [];
 			
 			$.each(app, function(key, appObject){
-				if(appObject.isApp == true && appObject.enabled == true){
+				if(appObject.isApp === true && appObject.enabled === true){
 					var thisApp = '<div class="column" data-id="' + appObject.id + '"><a href="javascript:void(0);"><img src="' + getIconURL(appObject) + '" /><span class="appName" title="' + appObject.description + '">' + appObject.name + '</span></a></div>';
 					appList.push(thisApp);
 				}
@@ -1542,7 +1530,7 @@ $(document).ready( function($){
 		var treeObj = {};
 		function loopChildren(childtree){
 			for(var i = 0; i < childtree.length; i++){
-				if($.type(childtree[i].children) !== 'undefined'){
+				if(typeof childtree[i].children !== 'undefined'){
 					loopChildren(childtree[i].children);
 				}else{
 					treeObj[childtree[i].id] = {
@@ -1559,7 +1547,7 @@ $(document).ready( function($){
 			if($.isEmptyObject(treeObj) === false){
 
 					var confirmation = confirm("Found a total of " + Object.keys(treeObj).length + " bookmarks. This will overwrite all your current dials, continue?");
-					if (confirmation == true){
+					if (confirmation === true){
 						var newDials = {};
 
 						var idCount = 1;
@@ -1609,5 +1597,4 @@ $(document).ready( function($){
 	$('#bookmarkImport').click( function(){
 		getBookmarks();
 	});
-	
 });
