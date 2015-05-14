@@ -1,6 +1,8 @@
 Google Chrome Extension: Smart Dials for the 'new tab page'
 ===========================================================
 
+Download link: https://chrome.google.com/webstore/detail/smart-dials-for-the-new-t/gdigllpmgjeneojfnbalomniaonmbiae
+
 **Override the 'new tab page' with a smart grid system that adapts to your habits. The more you use it the smarter it gets!
 Also features intelligent navigation suggestions based on previous browsing habits outside of your personal saved dials.**
 
