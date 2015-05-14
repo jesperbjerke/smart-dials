@@ -17,4 +17,8 @@ Other features:
 * Edit dials and set custom background color if it doesn't have a thumbnail
 * Clean interface and speedy performance.
 
-More features planned, feedback and suggestions are welcome!
+# Pending features
+[] Performance tweaks
+[] Feedly unread count
+[] See pages open on other devices
+[] Add custom environments
