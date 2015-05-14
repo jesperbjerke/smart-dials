@@ -1,0 +1,152 @@
+$useMargin: 0%;
+
+@mixin theWidth($columns, $margin: $useMargin){
+	
+    $totalMargin: ($margin * $columns) * 2;
+	
+	$outers: $margin * 2;
+	
+	$baseWidth: 100% - ($totalMargin - $outers);
+        
+    width: $baseWidth / $columns;
+        
+}
+
+@for $i from 2 through 10 {
+    
+    .row{
+        
+        &.count-#{$i}{
+            
+            > .column{
+                margin: $useMargin;
+                display: inline-block;
+                float: left;
+                position: relative;
+                @include theWidth($i);
+                
+				&:nth-child(#{$i}n){
+                    margin-right: 0;
+                }
+                
+                &:nth-child(#{$i}n + 1),
+                &:first-of-type{
+                    margin-left: 0;
+                    //clear: left;
+                }
+                
+                @media screen and (max-width:900px){
+                    @if $i > 3 {
+                        @include theWidth(3);
+                        margin: $useMargin;
+                        clear:none;
+                        
+                        &:nth-child(3n){
+                            margin-right: 0;
+                            margin-left: $useMargin;
+                            clear: none;
+                        }
+                        
+                        &:first-child,
+                        &:nth-child(3n + 1){
+                            margin-left: 0;
+                            margin-right: $useMargin;
+                            //clear: left;
+                        }
+                    }
+                }
+                
+                @media screen and (max-width:750px){
+                    @if $i > 2 {
+                        @include theWidth(2);
+                        margin: $useMargin;
+                        clear:none;
+                        
+                        &:nth-child(2n){
+                            margin-right: 0;
+                            margin-left: $useMargin;
+                            clear: none;
+                        }
+                        
+                        &:first-child,
+                        &:nth-child(2n + 1){
+                            margin-left: 0;
+                            margin-right: $useMargin;
+                            //clear: left;
+                        }
+                    }
+                }
+                
+                @media screen and (max-width:550px){
+                    width: 100%;
+                    float: none;
+                    margin: $useMargin 0% $useMargin 0% !important;
+                    //clear: both !important
+                }
+            }
+        }
+		
+		&.no-margin.count-#{$i}{
+		
+            > .column{
+                margin: 0;
+                @include theWidth($i, 0);
+                
+                @media screen and (max-width:900px){
+                    @if $i > 3 {
+                        @include theWidth(3, 0);
+                        margin: 0;
+                        
+                        &:nth-child(3n){
+                            margin-left: 0;
+                        }
+                        
+                        &:first-child,
+                        &:nth-child(3n + 1){
+                            margin-right: 0;
+                        }
+                    }
+                }
+                
+                @media screen and (max-width:750px){
+                    @if $i > 2 {
+                        @include theWidth(2, 0);
+                        margin: 0;
+                        
+                        &:nth-child(2n){
+                            margin-left: 0;
+                        }
+                        
+                        &:first-child,
+                        &:nth-child(2n + 1){
+                            margin-right: 0;
+                        }
+                    }
+                }
+                
+                @media screen and (max-width:550px){
+					width: 100%;
+                    margin: 0% 0% 0% 0% !important;
+                }
+            }
+		}
+    }
+}
+
+/*
+ * FLOATCONTAINER
+ */
+    .row:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+}
+    * html .row {
+    zoom: 1;
+}
+    *:first-child+html .row {
+    zoom: 1;
+}

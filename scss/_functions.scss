@@ -1,0 +1,121 @@
+/*
+ * DEFAULT FUNCTIONS
+ */
+
+        @mixin elegantIcons($icon){
+            content:  $icon;
+            font-family: 'ElegantIcons';
+            speak: none;
+            font-style: normal;
+            font-weight: normal;
+            font-variant: normal;
+            text-transform: none;
+            line-height: 1;
+            -webkit-font-smoothing: antialiased;
+            display: inline-block;
+        }
+
+    //MEDIA QUERY SHORTENER
+    
+        @mixin breakpoint($type, $media){
+            $theType: if($type == max, max-width, min-width);
+            @media only screen and ($theType : $media){
+                @content;
+            }
+        }
+
+    //TEXT COLOR
+        @mixin txtColor($color, $txt: ''){
+            $textColor: null;
+            $hoverColor: null;
+            
+            @if $color == light {
+                $textColor: $light;
+                $hoverColor: darken($textColor, 20%);
+            } @else if $color == dark{
+                $textColor: $dark;
+                $hoverColor: lighten($textColor, 20%);
+            } @else {
+                $textColor: $color;
+                $hoverColor: darken($textColor, 20%);
+            }
+
+            color: $textColor;
+            
+            @if $txt == link{
+                &:hover{
+                    color: $hoverColor;
+                }
+            } @else {
+                a{
+                    color: $textColor;
+
+                    &:hover{
+                        color: $hoverColor;
+                    }
+                }
+            }
+        }
+
+    //Fonts
+        $normalFontSize: 18px;
+        @mixin useFont($type){
+            @if $type == content {
+                font-size: $normalFontSize;
+                font-family: 'Roboto', 'Helvetica', sans-serif;
+                font-weight: 300;
+            } @else if $type == title {
+                font-size: $normalFontSize + 4px;
+				font-family: 'Roboto Slab', serif;
+                font-weight: 700;
+            }
+            .fat{
+                font-weight: 700;
+            }
+        }
+
+	// --------------------------------------------------------
+	// arrows
+	// --------------------------------------------------------
+	// $direction: top, left, right, bottom, top-left, top-right, bottom-left, bottom-right
+	// $color: hex, rgb or rbga
+	// $size: px or em
+	// @example
+	// .element{
+	//     @include arrow(top, #000, 50px);   
+	// }
+	@mixin arrow($direction, $color, $size){
+		display: block;
+		height: 0;
+		width: 0;
+
+		@if $direction == 'top' {
+			border-left: $size solid transparent;
+			border-right: $size solid transparent;
+			border-bottom: $size solid $color;
+		} @else if $direction == 'right' {
+			border-top: $size solid transparent;
+			border-bottom: $size solid transparent;
+			border-left: $size solid $color;
+		} @else if $direction == 'bottom' {
+			border-top: $size solid $color;
+			border-right: $size solid transparent;
+			border-left: $size solid transparent;
+		} @else if $direction == 'left' {
+			border-top: $size solid transparent;
+			border-right: $size solid $color;
+			border-bottom: $size solid transparent;
+		} @else if $direction == 'top-left' {
+			border-top: $size solid $color; 
+			border-right: $size solid transparent;	
+		} @else if $direction == 'top-right' {
+			border-top: $size solid $color; 
+			border-left: $size solid transparent;
+		} @else if $direction == 'bottom-left' {
+			border-bottom: $size solid $color; 
+			border-right: $size solid transparent;	
+		} @else if $direction == 'bottom-right' {
+			border-bottom: $size solid $color; 
+			border-left: $size solid transparent;
+		}
+	}

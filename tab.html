@@ -1,0 +1,265 @@
+
+<head>
+	<meta charset="UTF-8">
+	<title>New Tab</title>
+	<link rel="shortcut icon" href="images/favicon.ico" />
+	<link rel="stylesheet" href="css/style.css">
+
+	<script src="js/min/jquery-2.1.1.min.js" type="text/javascript"></script>
+	<script src="js/min/isotope.pkgd.min.js" type="text/javascript"></script>
+	<script src="js/min/packery-mode.pkgd.min.js" type="text/javascript"></script>
+	<script src="js/min/jquery.mCustomScrollbar.concat.min.js" type="text/javascript"></script>
+	<script src="js/min/jquery-dateFormat.min.js" type="text/javascript"></script>
+	<script src="js/min/colpick.min.js" type="text/javascript"></script>
+	<script src="js/min/scripts.min.js" type="text/javascript"></script>
+</head>
+<body>
+	<div id="setEnvironment" class="dialogContainer">
+		<div class="dialogContent row count-2 no-margin">
+			<h2>Where are you now?</h2>
+			<div class="option column" data-value="home">At Home <span class="icon_house_alt"></span></div>
+			<div class="option column" data-value="work">At Work <span class="icon_briefcase"></span></div>
+		</div>
+	</div>
+	<header>
+		<div id="sidebarContainer">
+			<section id="menu">
+				<ul>
+					<li data-target="dials">
+						<span id="addDial-btn" class="popOut-btn" title="Add dial">+</span>
+						<span class="menu-icon" id="dials-icon"></span>
+						Dials
+					</li>
+					<li data-target="pocket">
+						<div id="searchPocket-btn" class="popOut-btn" title="Search unread articles"><span class="icon_search"></span></div>
+						<span class="count"></span>
+						<span class="menu-icon" id="pocket-icon"></span>
+						Pocket
+					</li>
+					<li data-target="evernote">
+						<span class="menu-icon" id="evernote-icon"></span>
+						Evernote
+					</li>
+					<li data-target="feedly">
+						<span class="menu-icon" id="feedly-icon"></span>
+						Feedly
+					</li>
+					<li data-target="apps">
+						<div id="manageApps-btn" class="popOut-btn" title="Manage apps & extensions"><span class="icon_adjust-vert"></span></div>
+						<span class="menu-icon" id="apps-icon"></span>
+						Apps
+					</li>
+					<li data-target="settings">
+						<span class="menu-icon" id="settings-icon"></span>
+						Settings
+					</li>
+				</ul>
+			</section>
+		</div>
+	</header>
+	<div id="dials" class="content">
+		<section id="sortingOptions">
+			<div id="optionsContainer">
+				<div id="currently"></div>
+				<div id="optionsInner">
+					<h3>Environment</h3>
+					<ul>
+						<li data-value="home"><span>Home</span></li>
+						<li data-value="work"><span>Work</span></li>
+					</ul>
+					<h3>Time of Day</h3>
+					<ul>
+						<li data-value="morning"><span>Morning</span></li>
+						<li data-value="day"><span>Day</span></li>
+						<li data-value="afternoon"><span>Afternoon</span></li>
+						<li data-value="evening"><span>Evening</span></li>
+						<li data-value="night"><span>Night</span></li>
+					</ul>
+				</div>
+			</div>
+		</section>
+		<div id="topDials" class="row count-5">
+
+		</div>
+		<div id="suggestedDials" class="row count-5">
+
+		</div>
+		<div id="filteredDials" class="row count-5">
+
+		</div>
+	</div>
+	<div id="pocket" class="content">
+		<a href="javascript:void(0)" id="authPocket">Click to connect<img id="pocket-logo" src="images/pocket-logo.png" /></a>
+		<div id="pocketDials" class="row count-5"></div>
+	</div>
+	<!--
+	<div id="evernote" class="content">
+		<a href="javascript:void(0)" id="authEvernote">Click to connect<img id="evernote-badge" src="images/pocket-badge.png" /></a>
+		<div class="row count-5"></div>
+	</div>
+	-->
+	<div id="apps" class="content">
+		<div class="row count-5"></div>
+	</div>
+	<div id="loader">
+		<img src="images/dials-btn.png" />
+		<div class="spinner">
+			<div class="bounce1"></div>
+			<div class="bounce2"></div>
+			<div class="bounce3"></div>
+		</div>
+	</div>
+	<div id="addDial" class="dialogContainer">
+		<div class="dialogContent">
+			<span class="closeDialog">x</span>
+			<h2>Add dial</h2>
+			<div id="innerDialogContent">
+				<div id="topSitesList"><ul></ul></div>
+				<div id="addInputs" class="row show">
+					<button id="topSitesBtn">Pick from top sites based on browser history</button>
+					<span class="divider">or add manually</span>
+					<div class="inputContainer">
+						<span class="label-icon icon_link_alt"></span>
+						<input id="url" name="url" placeholder="URL" type="text">
+					</div>
+					<div class="inputContainer">
+						<span class="label-icon icon_tag_alt"></span>
+						<input id="name" name="name" placeholder="Title" type="text">
+					</div>
+					<button class="submit disabled"><span class="icon_floppy"></span></button>
+					<button class="submit disabled continue"><span class="icon_floppy"></span> + Add again</button>
+				</div>
+			</div>
+		</div>
+	</div>	
+	<div id="pocketSearch" class="dialogContainer">
+		<div class="dialogContent">
+			<span class="closeDialog">x</span>
+			<h2>Search unread articles</h2>
+			<div id="innerDialogContent">
+				<div id="searchInput" class="row">
+					<div class="inputContainer">
+						<span class="label-icon icon_search"></span>
+						<input id="search" name="search" placeholder="Search for title, word in excerpt or tags" type="text">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>		
+	<div id="editDial" class="dialogContainer">
+		<div class="dialogContent">
+			<span class="closeDialog">x</span>
+			<h2>Edit dial</h2>
+			<div id="innerDialogContent">
+				<div id="editInputs" class="row">
+					<div class="inputContainer">
+						<span class="label-icon icon_link_alt"></span>
+						<input id="url" name="url" placeholder="URL" type="text">
+					</div>
+					<div class="inputContainer">
+						<span class="label-icon icon_tag_alt"></span>
+						<input id="name" name="name" placeholder="Title" type="text">
+					</div>
+					<div class="inputContainer center">
+						<span class="label-icon icon_hash">#</span>
+						<input type="text" id="picker" placeholder="Color">
+					</div>
+					<button class="submit disabled"><span class="icon_floppy"></span></button>
+					<button class="rearrange disabled"><span class="arrow_left-right_alt"></span> Rearrange</button>
+				</div>
+			</div>
+		</div>
+	</div>	
+	<div id="settings" class="dialogContainer">
+		<div class="dialogContent">
+			<span class="closeDialog">x</span>
+			<h2>Settings</h2>
+			<div id="innerDialogContent">
+				<div id="import">
+					<div class="inputContainer row">
+						<textarea name="importarea" id="importdials" cols="30" rows="10" placeholder="Paste the contents of the export output from Speeddial 2"></textarea>
+					</div>
+					<div class="inputContainer row">
+						<button id="import-btn" class="disabled">Import</button>
+					</div>
+				</div>
+				<div id="settingsInput" class="row show">
+					<div class="inputContainer row">
+						<span class="label pocket">Pocket</span>
+						<div class="onoffswitch">
+							<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="pocketswitch" data-value="pocket" checked>
+							<label class="onoffswitch-label" for="pocketswitch">
+								<span class="onoffswitch-inner"></span>
+								<span class="onoffswitch-switch"></span>
+							</label>
+						</div>
+					</div>
+					<div class="inputContainer row">
+						<span class="label evernote">Evernote (Quicklink)</span>
+						<div class="onoffswitch">
+							<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="evernoteswitch" data-value="evernote" checked>
+							<label class="onoffswitch-label" for="evernoteswitch">
+								<span class="onoffswitch-inner"></span>
+								<span class="onoffswitch-switch"></span>
+							</label>
+						</div>
+					</div>
+					<div class="inputContainer row">
+						<span class="label feedly">Feedly (Quicklink)</span>
+						<div class="onoffswitch">
+							<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="feedlyswitch" data-value="feedly" checked>
+							<label class="onoffswitch-label" for="feedlyswitch">
+								<span class="onoffswitch-inner"></span>
+								<span class="onoffswitch-switch"></span>
+							</label>
+						</div>
+					</div>
+					<div class="inputContainer row">
+						<span class="label apps">Apps</span>
+						<div class="onoffswitch">
+							<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="appsswitch" data-value="apps" checked>
+							<label class="onoffswitch-label" for="appsswitch">
+								<span class="onoffswitch-inner"></span>
+								<span class="onoffswitch-switch"></span>
+							</label>
+						</div>
+					</div>
+					<div class="inputContainer row">
+						<span class="label suggestions">Suggestions</span>
+						<div class="onoffswitch">
+							<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="suggestionsswitch" data-value="suggestions" checked>
+							<label class="onoffswitch-label" for="suggestionsswitch">
+								<span class="onoffswitch-inner"></span>
+								<span class="onoffswitch-switch"></span>
+							</label>
+						</div>
+					</div>
+					<div class="inputContainer row">
+						<span class="label beSmart">Smart filtering</span>
+						<div class="onoffswitch">
+							<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="beSmartswitch" data-value="beSmart" checked>
+							<label class="onoffswitch-label" for="beSmartswitch">
+								<span class="onoffswitch-inner"></span>
+								<span class="onoffswitch-switch"></span>
+							</label>
+						</div>
+					</div>
+					<div class="inputContainer row columnCount">
+						<p>Columns of dials</p>
+						<span data-value="3" class="columns">3</span>
+						<span data-value="5" class="columns">5</span>
+						<span data-value="8" class="columns">8</span>
+						<span data-value="10" class="columns">10</span>
+					</div>
+					<div class="inputContainer row">
+						<button id="speedDialImport">Import dials from Speedial 2</button>
+					</div>
+					<div class="inputContainer row">
+						<button id="bookmarkImport">Import all bookmarks into dials</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="copyright"><span>Created by <a href="http://westart.se">Jesper Bjerke</a></span></div>
+</body>
